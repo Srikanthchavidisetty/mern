@@ -7,10 +7,14 @@ const employeeRoutes = require("./routes/employeeRoutes");
 
 const app = express();
 
-// ==============================
-// CORS - handle manually
-// ==============================
+// =====================================
+// CORS
+// =====================================
 app.use((req, res, next) => {
+  // Debug header
+  res.setHeader("X-CORS-DEBUG", "YES");
+
+  // Allow your Vercel frontend
   res.setHeader(
     "Access-Control-Allow-Origin",
     "https://mern-7s9f-hlbq01kc-srikanth-b5e0.vercel.app"
@@ -26,6 +30,7 @@ app.use((req, res, next) => {
     "Content-Type, Authorization"
   );
 
+  // Handle browser preflight request
   if (req.method === "OPTIONS") {
     return res.status(204).end();
   }
@@ -33,47 +38,55 @@ app.use((req, res, next) => {
   next();
 });
 
-// ==============================
-// JSON
-// ==============================
+// =====================================
+// JSON Middleware
+// =====================================
 app.use(express.json());
 
-// ==============================
-// Test
-// ==============================
+// =====================================
+// Test Route
+// =====================================
 app.get("/", (req, res) => {
   res.json({
     message: "Employee MERN Backend is running"
   });
 });
 
-// ==============================
-// Routes
-// ==============================
+// =====================================
+// API Routes
+// =====================================
 app.use("/api/auth", authRoutes);
 app.use("/api/employees", employeeRoutes);
 
-// ==============================
-// MongoDB
-// ==============================
+// =====================================
+// MongoDB Atlas Connection
+// =====================================
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB Atlas connected");
   })
   .catch((error) => {
-    console.error("MongoDB connection error:", error.message);
+    console.error(
+      "MongoDB connection error:",
+      error.message
+    );
   });
 
-// ==============================
-// Local server
-// ==============================
+// =====================================
+// Local Development
+// =====================================
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 5000;
 
   app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(
+      `Server running on http://localhost:${PORT}`
+    );
   });
 }
 
+// =====================================
+// Export for Vercel
+// =====================================
 module.exports = app;
