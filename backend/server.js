@@ -13,7 +13,7 @@ const app = express();
 // ==============================
 app.use(
   cors({
-    origin: "https://mern-7s9f.vercel.app",
+    origin:true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
