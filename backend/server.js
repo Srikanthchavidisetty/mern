@@ -7,18 +7,15 @@ const employeeRoutes = require("./routes/employeeRoutes");
 
 const app = express();
 
-// =====================================
+// ==============================
 // CORS
-// =====================================
+// ==============================
 app.use((req, res, next) => {
-  // Debug header
-  res.setHeader("X-CORS-DEBUG", "YES");
+  const origin = req.headers.origin;
 
-  // Allow your Vercel frontend
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://mern-7s9f-hlbq01kc-srikanth-b5e0.vercel.app"
-  );
+  if (origin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
 
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -30,7 +27,8 @@ app.use((req, res, next) => {
     "Content-Type, Authorization"
   );
 
-  // Handle browser preflight request
+  res.setHeader("Vary", "Origin");
+
   if (req.method === "OPTIONS") {
     return res.status(204).end();
   }
@@ -38,29 +36,29 @@ app.use((req, res, next) => {
   next();
 });
 
-// =====================================
-// JSON Middleware
-// =====================================
+// ==============================
+// JSON
+// ==============================
 app.use(express.json());
 
-// =====================================
-// Test Route
-// =====================================
+// ==============================
+// Test route
+// ==============================
 app.get("/", (req, res) => {
   res.json({
     message: "Employee MERN Backend is running"
   });
 });
 
-// =====================================
-// API Routes
-// =====================================
+// ==============================
+// Routes
+// ==============================
 app.use("/api/auth", authRoutes);
 app.use("/api/employees", employeeRoutes);
 
-// =====================================
-// MongoDB Atlas Connection
-// =====================================
+// ==============================
+// MongoDB Atlas
+// ==============================
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
@@ -73,9 +71,9 @@ mongoose
     );
   });
 
-// =====================================
-// Local Development
-// =====================================
+// ==============================
+// Local development
+// ==============================
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 5000;
 
@@ -86,7 +84,7 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
-// =====================================
-// Export for Vercel
-// =====================================
+// ==============================
+// Vercel
+// ==============================
 module.exports = app;
